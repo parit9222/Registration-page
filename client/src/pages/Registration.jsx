@@ -1,8 +1,26 @@
 import React, { useState } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useNavigate } from 'react-router-dom';
 
 export default function Registration() {
+
+    //store in mongoDB
+    const [formData, setFormData] = useState({
+        firstname: '',
+        lastname: '',
+        email: '',
+        mobilenumber: '',
+        birthdate: '',
+        gender: '',
+        state: '',
+        city: '',
+        playing: false,
+        reading: false,
+        traveling: false,
+        password: '',
+        avatar: '',
+    });
 
     //city select box start
     const citiesData = {
@@ -24,7 +42,7 @@ export default function Registration() {
         setSelectedCity(city);
     };
     // end
-
+    const navigate = useNavigate();
     // Birthdate start
     const [selectedDate, setSelectedDate] = useState(null);
 
@@ -33,29 +51,13 @@ export default function Registration() {
 
     const handleDateChange = (date) => {
         setSelectedDate(date);
+        setFormData({
+            ...formData,
+            birthdate: date
+        })
     };
     //end
 
-    //store in mongoDB
-    const [formData, setFormData] = useState({
-        firstname: '',
-        lastname: '', 
-        email: '',  
-        mobilenumber: '',
-        birthdate: '',
-        gender:'',
-        // genderMale: false,
-        // genderFemale: false,
-        // genderOther: false,
-        state: '',
-        city: '',
-        // hobbies: [],
-        playing: false,
-        reading: false,
-        traveling: false,
-        password: '',
-        avatar: '',
-    });
     const handleChange = (e) => {
         if (e.target.id === 'male' || e.target.id === 'female' || e.target.id === 'other') {
             setFormData({
@@ -70,38 +72,43 @@ export default function Registration() {
             });
         }
 
-        if (e.target.id === 'firstname' || e.target.id === 'lastname' || e.target.id === 'email'|| e.target.id === 'mobilenumber' || e.target.id === 'state' || e.target.id === 'city' || e.target.id === 'password' || e.target.id === 'avatar') {
+        if (e.target.id === 'firstname' || e.target.id === 'lastname' || e.target.id === 'email' || e.target.id === 'mobilenumber' || e.target.id === 'state' || e.target.id === 'city' || e.target.id === 'password' || e.target.id === 'avatar') {
             setFormData({
                 ...formData,
                 [e.target.id]: e.target.value,
             });
         }
 
-        // if (e.target.id === 'bdate') {
+        // if (e.target.name === 'bdate') {
+        //     alert("hello birthday")
         //     setFormData({
         //         ...formData,
-        //         birthdate: e.target.value,
+        //         birthday: e.target.value,
         //     });
+        //     console.log(e.target.value);
         // }
 
     };
     console.log(formData);
 
-    const handleSubmit = async() => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch ('/api/user/reg', {
+            const res = await fetch('/api/user/reg', {
                 method: "POST",
                 headers: {
-                  "Content-Type": "application/json",
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify({...formData}),
+                body: JSON.stringify({ ...formData }),
             });
             const data = await res.json();
-            if (data) {
+            console.log(data, " data");
+            if (data.status === 200) {
                 console.log(data);
+                navigate('/')
+                return;
             }
-            else{
+            else {
                 setError(data.message);
             }
         } catch (error) {
@@ -130,12 +137,9 @@ export default function Registration() {
                     <DatePicker
                         placeholderText='Birthdate'
                         selected={selectedDate}
-                        id='bdate'
+                        name='bdate'
                         value={selectedDate}
-                        onChange={(event) => {
-                            handleDateChange(event);
-                            handleChange(event);
-                        }}
+                        onChange={handleDateChange}
                         dateFormat="MM/dd/yyyy"
                         maxDate={maxDate}
                         className="border p-3 w-60 rounded-lg"
@@ -223,7 +227,7 @@ export default function Registration() {
                 </div>
 
             </form>
-            
+
 
         </div>
     )

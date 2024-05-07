@@ -21,7 +21,7 @@ const registrationSchema = new mongoose.Schema({
     },
     birthdate: {
         type: String, 
-        required: true,
+        // required: true,
     },
     gender: {
         type: String,
