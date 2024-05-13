@@ -1,17 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate } from 'react-router-dom';
-import { format } from 'date-fns';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from '../firebase'
-import swal from 'sweetalert';
-import { ToastContainer, toast } from 'react-toastify';
-  import 'react-toastify/dist/ReactToastify.css';
 
-export default function Registration() {
+export default function Update() {
 
-    //store in mongoDB
     const [formData, setFormData] = useState({
         firstname: '',
         lastname: '',
@@ -21,15 +16,25 @@ export default function Registration() {
         gender: '',
         state: '',
         city: '',
-        // hobbies: [],
         playing: false,
         reading: false,
         traveling: false,
         password: '',
         avatar: '',
     });
-    console.log(formData);
+    const { id } = useParams();
+    console.log(id);
+    const [selectedState, setSelectedState] = useState('');
+    const [selectedCity, setSelectedCity] = useState('');
 
+    const [selectedDate, setSelectedDate] = useState(null);
+
+    const today = new Date();
+    const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+    const citiesData = {
+        Gujarat: ['Surat', 'Vadodara'],
+        Maharashtra: ['Nashik', 'Pune'],
+    };
 
 
     const fileRef = useRef(null);
@@ -58,63 +63,6 @@ export default function Registration() {
         );
     };
 
-    const citiesData = {
-        Gujarat: ['Surat', 'Vadodara'],
-        Maharashtra: ['Nashik', 'Pune'],
-    };
-    const [selectedState, setSelectedState] = useState('');
-    const [selectedCity, setSelectedCity] = useState('');
-    const handleStateChange = (e) => {
-        const state = e.target.value;
-        setSelectedState(state);
-        setSelectedCity('');
-    };
-
-    const handleCityChange = (e) => {
-        const city = e.target.value;
-        setSelectedCity(city);
-    };
-    // end
-    const navigate = useNavigate();
-    // Birthdate start
-    const [selectedDate, setSelectedDate] = useState(null);
-
-    const today = new Date();
-    const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
-
-    const handleDateChange = (date) => {
-        const formattedDate = format(date, 'dd-MM-yyyy');
-        setSelectedDate(date);
-        setFormData({
-            ...formData,
-            birthdate: formattedDate,
-        })
-    };
-    //end
-
-    const handleChange = (e) => {
-        if (e.target.id === 'male' || e.target.id === 'female' || e.target.id === 'other') {
-            setFormData({
-                ...formData,
-                gender: e.target.id,
-            });
-        }
-        if (e.target.id === 'playing' || e.target.id === 'reading' || e.target.id === 'traveling') {
-            setFormData({
-                ...formData,
-                [e.target.id]: e.target.checked,
-                // hobbies: [e.target.id],
-            });
-        }
-
-        if (e.target.id === 'firstname' || e.target.id === 'lastname' || e.target.id === 'email' || e.target.id === 'mobilenumber' || e.target.id === 'state' || e.target.id === 'city' || e.target.id === 'password') {
-            setFormData({
-                ...formData,
-                [e.target.id]: e.target.value,
-            });
-        }
-    };
-
 
     const [email, setEmail] = useState('');
     const [isValid, setIsValid] = useState(true);
@@ -132,114 +80,146 @@ export default function Registration() {
     const [emailError, setEmailError] = useState('');
     const handleEmailBlur = () => {
         if (!email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
-            toast('Please enter a valid email address');
+            setEmailError('Please enter a valid email address');
         } else {
-            toast('');
+            setEmailError('');
         }
     };
-
-
-
 
     const [phno, setPhno] = useState('');
     const [phnoError, setPhnoError] = useState('');
     const handlePhnoBlur = () => {
         if (phno.length < 10) {
-            toast("Phone number must be 10 digit ");
+            setPhnoError("Phone number must be 10 digit ");
         }
         else {
-            toast('');
+            setPhnoError('');
         }
     };
 
     const handleNumberChange = (e) => {
         const inputValue = e.target.value;
-        if (/^\d{0,10}$/.test(inputValue)) { // Regex to allow only 10 digits
+        if (/^\d{0,10}$/.test(inputValue)) {
             setPhno(inputValue);
         }
     };
 
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
 
-    const handlePassChange = (e) => {
-        setPassword(e.target.value);
+    const handleStateChange = (e) => {
+        const state = e.target.value;
+        setSelectedState(state);
+        setSelectedCity('');
     };
 
-    const handleConfirmPasswordChange = (e) => {
-        setConfirmPassword(e.target.value);
+    const handleCityChange = (e) => {
+        const city = e.target.value;
+        setSelectedCity(city);
     };
 
 
-    const [error, setError] = useState('');
-    const validateForm = () => {
-        if (formData.firstname === '' || formData.email === '' || formData.mobilenumber === '' || formData.state === '' || formData.city === '' || formData.password === '' || formData.avatar === '') {
-            toast('Please fill in all required fields.');
-            return false;
+    const handleDateChange = (date) => {
+        setSelectedDate(date);
+        setFormData({
+            ...formData,
+            birthdate: date,
+        })
+    };
+
+    const handleChange = (e) => {
+        if (e.target.id === 'male' || e.target.id === 'female' || e.target.id === 'other') {
+            setFormData({
+                ...formData,
+                gender: e.target.id,
+            });
         }
-        return true;
+        if (e.target.id === 'playing' || e.target.id === 'reading' || e.target.id === 'traveling') {
+            setFormData({
+                ...formData,
+                [e.target.id]: e.target.checked,
+            });
+        }
+
+        if (e.target.id === 'firstname' || e.target.id === 'lastname' || e.target.id === 'email' || e.target.id === 'mobilenumber' || e.target.id === 'state' || e.target.id === 'city' || e.target.id === 'password' || e.target.id === 'avatar') {
+            setFormData({
+                ...formData,
+                [e.target.id]: e.target.value,
+            });
+        }
+
     };
 
-    const handleSubmit = async (e) => {
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await fetch(`/api/user/current_user/${id}`);
+                const data = await res.json();
+                if (data.status === 201) {
+                    const user = data.data
+                    console.log(user);
+                    setFormData({
+                        ...formData,
+                        firstname: user.firstname,
+                        lastname: user.lastname,
+                        email: user.email,
+                        mobilenumber: user.mobilenumber,
+                        birthdate: user.birthdate,
+                        gender: user.gender,
+                        state: user.state,
+                        city: user.city,
+                        playing: user.playing,
+                        reading: user.reading,
+                        traveling: user.traveling,
+                        password: user.password,
+                        avatar: user.avatar,
+                    })
+                }
+            } catch (error) {
+                console.log(error, " fetching data error in update")
+            }
+        }
+
+        fetchData();
+    }, []);
+    const navigate = useNavigate();
+    const handleUpdate = async (e) => {
         e.preventDefault();
-
-        if (!validateForm()) {
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            toast('Passwords do not match');
-            return;
-        } else {
-            toast('');
-        }
-
         try {
-            const res = await fetch('/api/user/reg', {
-                method: "POST",
+            const res = await fetch(`/api/user/update/${id}`, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ ...formData }),
             });
             const data = await res.json();
-            console.log("Request body:", JSON.stringify({ ...formData }));
-            if (data) {
-                swal({
-                    title: "Success",
-                    text: "Data created successfully!",
-                    icon: "success",
-                }).then(() => {
-                    navigate('/');
-                });
+            console.log(data);
+            if (data.status === 201) {
+                console.log(data);
+                navigate('/');
                 return;
-            }
-            else {
-                setError(data.message);
+            } else {
+                console.log(data.message);
             }
         } catch (error) {
-            console.log(error.message);
+            console.error(error.message);
         }
-
     };
-
     return (
         <div className='p-3 max-w-lg mx-auto'>
 
             <h1 className='text-3xl text-center font-semibold my-7'>Registration</h1>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleUpdate}>
 
                 <div className='flex gap-2 flex-1 mt-5'>
-                    <input onChange={handleChange} type="text" placeholder='First Name' id='firstname' className='border w-60 p-3 rounded-lg' />
-                    <input onChange={handleChange} type="text" placeholder='Last Name' id='lastname' className='border w-60 p-3 rounded-lg' />
+                    <input onChange={handleChange} type="text" placeholder='First Name' id='firstname' className='border w-60 p-3 rounded-lg' value={formData.firstname} required />
+                    <input onChange={handleChange} type="text" placeholder='Last Name' id='lastname' className='border w-60 p-3 rounded-lg' value={formData.lastname} />
                 </div>
 
                 <div className='flex flex-col gap-4 flex-1 mt-5'>
                     <input
                         type="email"
-                        value={email}
+                        value={formData.email || email}
                         onChange={
                             (e) => {
                                 handleEmailChange(e),
@@ -247,55 +227,54 @@ export default function Registration() {
                             }
                         }
                         placeholder="Email"
+                        onBlur={handleEmailBlur}
                         className='border p-3 rounded-lg'
                         id="email"
-                        onBlur={handleEmailBlur}
                     />
                 </div>
 
                 <div className='flex gap-2 flex-1 mt-5'>
-
                     <input
                         type="tel"
-                        value={phno}
+                        value={formData.mobilenumber || phno}
                         onChange={
                             (e) => {
                                 handleNumberChange(e),
                                     handleChange(e)
                             }
                         }
-                        onBlur={handlePhnoBlur}
                         maxLength={10}
+                        onBlur={handlePhnoBlur}
                         pattern="[0-9]*"
                         placeholder='Mobile Number'
                         className='border p-3 w-60 rounded-lg'
                         id="mobilenumber"
+                        required
                     />
-
                     <DatePicker
                         placeholderText='Birthdate'
                         selected={selectedDate}
-                        value={selectedDate}
+                        name='bdate'
+                        value={formData.birthdate || selectedDate}
                         onChange={handleDateChange}
                         dateFormat="MM/dd/yyyy"
                         maxDate={maxDate}
                         className="border p-3 w-60 rounded-lg"
-                        required
                     />
                 </div>
 
                 <div className='flex gap-10 mt-4 flex-wrap'>
                     <span className='mx-6 text-slate-600'>Gender: </span>
                     <div className='flex gap-2'>
-                        <input onChange={handleChange} type="radio" name="gender" id="male" className='w-5' />
+                        <input onChange={handleChange} checked={formData.gender === 'male'} type="radio" name="gender" id="male" className='w-5' />
                         <span className='text-slate-600'>Male</span>
                     </div>
                     <div className='flex gap-2'>
-                        <input onChange={handleChange} type="radio" name="gender" id="female" className='w-5' />
+                        <input onChange={handleChange} checked={formData.gender === 'female'} type="radio" name="gender" id="female" className='w-5' />
                         <span className='text-slate-600'>Female</span>
                     </div>
                     <div className='flex gap-2'>
-                        <input onChange={handleChange} type="radio" name="gender" id="other" className='w-5' />
+                        <input onChange={handleChange} checked={formData.gender === 'other'} type="radio" name="gender" id="other" className='w-5' />
                         <span className='text-slate-600'>Other</span>
                     </div>
                 </div>
@@ -304,7 +283,7 @@ export default function Registration() {
                     <select
                         className="border p-3 rounded-lg"
                         id='state'
-                        value={selectedState}
+                        value={formData.state || selectedState}
                         onChange={(event) => {
                             handleStateChange(event);
                             handleChange(event);
@@ -321,7 +300,7 @@ export default function Registration() {
                     <select
                         className="border p-3 rounded-lg"
                         id='city'
-                        value={selectedCity}
+                        value={formData.city || selectedCity}
                         onChange={(event) => {
                             handleCityChange(event);
                             handleChange(event);
@@ -351,70 +330,25 @@ export default function Registration() {
                     </div>
                 </div>
 
-
                 <div className='flex flex-col gap-4 flex-1 mt-5'>
-                    <input
-                        onChange={(e) => {
-                            handlePassChange(e),
-                            handleChange(e)
-                        }}
-                        type="password"
-                        placeholder='Password'
-                        className='border p-3 rounded-lg'
-                        id="password"
-                        minLength='8'
-                        value={password}
-                    />
-                    <input
-                        onChange={handleConfirmPasswordChange}
-                        type="password"
-                        placeholder='Confirm Password'
-                        className='border p-3 rounded-lg'
-                        id="confirmpassword"
-                        minLength='8'
-                        value={confirmPassword}
-                    />
+                    <input onChange={handleChange} type="password" placeholder='Password' className='border p-3 rounded-lg' id="password" minLength='8' />
+                    <input type="password" placeholder='Confirm Password' className='border p-3 rounded-lg' id="confirmpassword" minLength='8' />
                 </div>
-
-                {/* <div className='flex flex-col gap-4 flex-1 mt-5'>
-                    <input onChange={(e) => {
-                        handleChange(e),
-                            (e) => setPassword(e.target.value)
-                    }
-                    } type="password" placeholder='Password' className='border p-3 rounded-lg' id="password" minLength='8' />
-                    <input onChange={(e) => setConfirmPassword(e.target.value)} type="password" placeholder='Confirm Password' className='border p-3 rounded-lg' id="confirmpassword" minLength='8' />
-                </div> */}
 
                 <div className="flex gap-4 mt-5">
                     <input className='p-3 border border-gray-300 rounded w-full' type="file" id='avatar' accept='image/*' ref={fileRef} onChange={(e) => setFile(e.target.files[0])} />
                 </div>
 
-                {error && <div className="text-red-500 mb-4 mt-2">{error}</div>}
                 {emailError && <div className="text-red-500 mb-4 mt-2">{emailError}</div>}
                 {phnoError && <div className="text-red-500 mb-4 mt-2">{phnoError}</div>}
-                {errorMessage && <p className="text-red-500 mb-4 mt-2">{errorMessage}</p>}
-
 
                 <div className='flex flex-col gap-4 flex-1 mt-5'>
-                    <button type='submit' className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95'>Submit</button>
+                    <button type='submit' className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95'>Update</button>
                 </div>
-
-                {/* <div className="flex gap-4 mt-5">
-                    <input ref={fileRef} onChange={
-                        (event) => {
-                            handleChange(event),
-                                (event) => setFile(event.target.files[0])
-                        }
-                    } className='p-3 border border-gray-300 rounded w-full' type="file" id='avatar' accept='image/*' />
-                </div>
-
-                <div className='flex flex-col gap-4 flex-1 mt-5'>
-                    <button type='submit' className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95'>Save</button>
-                </div> */}
 
             </form>
-            <ToastContainer/>
-            
+
+
         </div>
     )
 }
