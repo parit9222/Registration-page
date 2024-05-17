@@ -5,8 +5,8 @@ const router = express.Router();
 
 router.post('/reg', registration);
 router.get('/details', details);
-router.put('/update/:id', updateUser);
 router.delete('/delete/:id', deleteUser);
+router.put('/update/:id', updateUser);
 router.get('/current_user/:id', getCurrentUser);
 
 

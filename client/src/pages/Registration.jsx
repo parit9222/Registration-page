@@ -232,8 +232,8 @@ export default function Registration() {
             <form onSubmit={handleSubmit}>
 
                 <div className='flex gap-2 flex-1 mt-5'>
-                    <input onChange={handleChange} type="text" placeholder='First Name' id='firstname' className='border w-60 p-3 rounded-lg' />
-                    <input onChange={handleChange} type="text" placeholder='Last Name' id='lastname' className='border w-60 p-3 rounded-lg' />
+                    <input onChange={handleChange} type="text" placeholder='First Name' id='firstname' className='border w-60 p-3 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500' />
+                    <input onChange={handleChange} type="text" placeholder='Last Name' id='lastname' className='border w-60 p-3 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500' />
                 </div>
 
                 <div className='flex flex-col gap-4 flex-1 mt-5'>
@@ -247,7 +247,7 @@ export default function Registration() {
                             }
                         }
                         placeholder="Email"
-                        className='border p-3 rounded-lg'
+                        className='border p-3 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500'
                         id="email"
                         onBlur={handleEmailBlur}
                     />
@@ -268,7 +268,7 @@ export default function Registration() {
                         maxLength={10}
                         pattern="[0-9]*"
                         placeholder='Mobile Number'
-                        className='border p-3 w-60 rounded-lg'
+                        className='border p-3 w-60 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500'
                         id="mobilenumber"
                     />
 
@@ -279,7 +279,7 @@ export default function Registration() {
                         onChange={handleDateChange}
                         dateFormat="MM/dd/yyyy"
                         maxDate={maxDate}
-                        className="border p-3 w-60 rounded-lg"
+                        className="border p-3 w-60 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
                         required
                     />
                 </div>
@@ -302,7 +302,7 @@ export default function Registration() {
 
                 <div className='flex flex-col gap-4 flex-1 mt-5'>
                     <select
-                        className="border p-3 rounded-lg"
+                        className="border p-3 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
                         id='state'
                         value={selectedState}
                         onChange={(event) => {
@@ -319,7 +319,7 @@ export default function Registration() {
 
                 <div className='flex flex-col gap-4 flex-1 mt-5'>
                     <select
-                        className="border p-3 rounded-lg"
+                        className="border p-3 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
                         id='city'
                         value={selectedCity}
                         onChange={(event) => {
@@ -360,7 +360,7 @@ export default function Registration() {
                         }}
                         type="password"
                         placeholder='Password'
-                        className='border p-3 rounded-lg'
+                        className='border p-3 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500'
                         id="password"
                         minLength='8'
                         value={password}
@@ -369,7 +369,7 @@ export default function Registration() {
                         onChange={handleConfirmPasswordChange}
                         type="password"
                         placeholder='Confirm Password'
-                        className='border p-3 rounded-lg'
+                        className='border p-3 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500'
                         id="confirmpassword"
                         minLength='8'
                         value={confirmPassword}
@@ -386,7 +386,7 @@ export default function Registration() {
                 </div> */}
 
                 <div className="flex gap-4 mt-5">
-                    <input className='p-3 border border-gray-300 rounded w-full' type="file" id='avatar' accept='image/*' ref={fileRef} onChange={(e) => setFile(e.target.files[0])} />
+                    <input className='p-3 border border-gray-300 rounded w-full focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500' type="file" id='avatar' accept='image/*' ref={fileRef} onChange={(e) => setFile(e.target.files[0])} />
                 </div>
 
                 {error && <div className="text-red-500 mb-4 mt-2">{error}</div>}

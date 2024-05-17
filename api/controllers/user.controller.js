@@ -91,7 +91,7 @@ export const updateUser = async (req, res, next) => {
             { new: true },
         );
         const {password, ...rest} = updateUser._doc
-        res.status(201).json({status: 201, message: "update successfully", data : rest}); // Using res instead of reqsssssssssssssss
+        res.status(201).json({status: 201, message: "update successfully", data : rest}); 
 
     } catch (error) {
         console.log(error.message);
